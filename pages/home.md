@@ -7,9 +7,3 @@ eleventyNavigation:
   key: Home
   order: 0
 ---
-:::slider
-
-![](/static/img/bg1.jpg)
-![](/static/img/bg2.jpg)
-
-:::

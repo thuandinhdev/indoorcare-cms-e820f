@@ -30,12 +30,15 @@ window.CMS.registerEditorComponent({
     return `:::slider\n\n${imagesMarkdown}\n\n:::\n`;
   },
   toPreview: function (obj) {
+    if (!obj.images || obj.images.length === 0) return "";
+  
     const items = obj.images
       .map(
         (img) =>
-          `<div class="bg-home-80" style="background: url('${img}') no-repeat center center / cover;"></div>`
+          `<div class="bg-home-80" style="background: url('${img}') no-repeat center center / cover; height: 300px;"></div>`
       )
-      .join("");
+      .join("\n");
+  
     return `
       <div class="container-fluid px-0 mt-5 pt-md-4">
         <div class="slider single-item bg-home-custom slider-pc">
@@ -44,4 +47,5 @@ window.CMS.registerEditorComponent({
       </div>
     `;
   }
+  
 });
