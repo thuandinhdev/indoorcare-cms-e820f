@@ -10,3 +10,5 @@ eleventyNavigation:
 [](https://app.netlify.com/start/deploy?repository=https://github.com/danurbanowicz/eleventy-netlify-boilerplate&stack=cms)
 
 ![](/static/img/bg1.jpg)
+
+{% slider "/static/img/bg1.jpg" %}
