@@ -2,6 +2,7 @@ const { DateTime } = require("luxon");
 const CleanCSS = require("clean-css");
 const UglifyJS = require("uglify-js");
 const htmlmin = require("html-minifier");
+const nunjucks = require("nunjucks");
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 
 module.exports = function(eleventyConfig) {
@@ -115,7 +116,11 @@ module.exports = function(eleventyConfig) {
     `;
   });
 
-    
+    // Add render filter
+  eleventyConfig.addNunjucksFilter("render", function(content, ctx) {
+    return nunjucks.renderString(content, ctx);
+  });
+
   return {
     templateFormats: ["md", "njk", "liquid"],
 

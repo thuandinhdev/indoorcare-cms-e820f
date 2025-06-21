@@ -13,16 +13,16 @@ window.CMS.registerEditorComponent({
       }
     }
   ],
-  pattern: /^{{< slider "(.+?)" >}}$/,
+  // ✅ Dùng cú pháp {% slider "..." %}
+  pattern: /^{%\s+slider\s+"(.+?)"\s+%}$/,
   fromBlock: function (match) {
     return {
       images: match[1].split(",").map((img) => img.trim())
     };
   },
   toBlock: function (obj) {
-    return `{% slider "${obj.images.join(",")}" %}`;
+    return `{% slider "${obj.images.join(',')}" %}`;
   },
-  
   toPreview: function (obj) {
     const items = obj.images
       .map(
