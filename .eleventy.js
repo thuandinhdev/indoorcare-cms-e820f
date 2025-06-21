@@ -98,7 +98,8 @@ module.exports = function(eleventyConfig) {
     .use(markdownItAnchor, opts)
   );
   
-  eleventyConfig.addFilter("slider", function (imagesString) {
+  // Shortcode: slider
+  eleventyConfig.addShortcode("slider", function(imagesString) {
     if (!imagesString) return "";
     const images = imagesString.split(",").map(img => img.trim());
     const items = images.map(img =>
@@ -124,7 +125,7 @@ module.exports = function(eleventyConfig) {
     // This is only used for URLs (it does not affect your file structure)
     pathPrefix: "/",
 
-    markdownTemplateEngine: "liquid",
+    markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
     dir: {

@@ -13,19 +13,15 @@ window.CMS.registerEditorComponent({
       }
     }
   ],
-  // 🧠 Nhận dạng shortcode Liquid {% slider "..." %}
-  pattern: /^\{%\s*slider\s+"(.+?)"\s*%\}$/,
+  pattern: /^{{< slider "(.+?)" >}}$/,
   fromBlock: function (match) {
     return {
       images: match[1].split(",").map((img) => img.trim())
     };
   },
-  // ✅ Xuất ra cú pháp Liquid khi lưu Markdown
   toBlock: function (obj) {
-    return `{{ "${obj.images.join(",")}" | slider | safe }}`;
+    return `{{< slider "${obj.images.join(",")}" >}}`;
   },
-  
-  // 👀 Hiển thị preview bên phải CMS
   toPreview: function (obj) {
     const items = obj.images
       .map(
