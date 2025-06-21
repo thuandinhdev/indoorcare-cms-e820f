@@ -12,4 +12,7 @@ test
 :::slider
 ![](/static/img/bg1.jpg)
 ![](/static/img/bg2.jpg)
+![](/static/img/bg3.jpg)
+![](/static/img/bg4.jpg)
+![](/static/img/bg5.jpg)
 :::
