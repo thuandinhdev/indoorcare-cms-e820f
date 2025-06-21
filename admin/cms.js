@@ -22,8 +22,9 @@ window.CMS.registerEditorComponent({
   },
   // ✅ Xuất ra cú pháp Liquid khi lưu Markdown
   toBlock: function (obj) {
-    return `{% slider "${obj.images.join(',')}" %}`;
+    return `{{ "${obj.images.join(",")}" | slider | safe }}`;
   },
+  
   // 👀 Hiển thị preview bên phải CMS
   toPreview: function (obj) {
     const items = obj.images
