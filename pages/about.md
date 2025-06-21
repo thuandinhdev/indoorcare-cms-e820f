@@ -9,6 +9,4 @@ eleventyNavigation:
   key: About
   order: 1
 ---
-{% slider "/static/img/bg1.jpg" %}
-
-![](/static/img/bg1.jpg)
+test
