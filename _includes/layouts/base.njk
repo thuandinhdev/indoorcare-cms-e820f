@@ -1,16 +1,18 @@
 <!doctype html>
 <html {% if section %} data-current="{{ section }}"{% endif %} lang="en">
 
-  {% include "components/head.njk" %}
+	{% include "components/head.njk" %}
 
-  <body>
-    <header id="topnav" class="defaultscroll sticky">
-      {% include "components/nav.njk" %}
-    </header>
+	<body>
 
-    {% block content %}{% endblock %}
+		<header id="topnav" class="defaultscroll sticky">
+			{% include "components/nav.njk" %}
+		</header>
 
-    {% include "components/footer.njk" %}
-  </body>
+		{% block content %}{% endblock %}
+
+		{% include "components/footer.njk" %}
+
+	</body>
 
 </html>
