@@ -115,7 +115,7 @@ module.exports = function(eleventyConfig) {
       </div>
     `;
   });
-
+  
     // Add render filter
   eleventyConfig.addNunjucksFilter("render", function(content, ctx) {
     return nunjucks.renderString(content, ctx);
