@@ -13,15 +13,21 @@ window.CMS.registerEditorComponent({
       }
     }
   ],
-  // ✅ Dùng cú pháp {% slider "..." %}
-  pattern: /^{%\s+slider\s+"(.+?)"\s+%}$/,
-  fromBlock: function (match) {
+  pattern: /^:::slider/,
+  fromBlock: function (match, content) {
+    const imageUrls = (content || "")
+      .split("![](")
+      .slice(1)
+      .map(str => str.split(")")[0].trim());
     return {
-      images: match[1].split(",").map((img) => img.trim())
+      images: imageUrls
     };
   },
   toBlock: function (obj) {
-    return `{% slider "${obj.images.join(',')}" %}`;
+    const imagesMarkdown = obj.images
+      .map(img => `![](${img})`)
+      .join("\n");
+    return `:::slider\n\n${imagesMarkdown}\n\n:::\n`;
   },
   toPreview: function (obj) {
     const items = obj.images
