@@ -20,8 +20,9 @@ window.CMS.registerEditorComponent({
     };
   },
   toBlock: function (obj) {
-    return `{{< slider "${obj.images.join(",")}" >}}`;
+    return `{% slider "${obj.images.join(",")}" %}`;
   },
+  
   toPreview: function (obj) {
     const items = obj.images
       .map(
