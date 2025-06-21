@@ -7,6 +7,6 @@ eleventyNavigation:
   key: Home
   order: 0
 ---
-
-
 [](https://app.netlify.com/start/deploy?repository=https://github.com/danurbanowicz/eleventy-netlify-boilerplate&stack=cms)
+
+{{< slider "/static/img/bg1.jpg" >}}
