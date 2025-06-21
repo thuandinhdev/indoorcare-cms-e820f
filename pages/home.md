@@ -16,3 +16,9 @@ test
 ![](/static/img/bg4.jpg)
 ![](/static/img/bg5.jpg)
 :::
+
+:::cardproducts
+- image: /static/img/bg1.jpg
+  link: javascript:void(0)
+  title: test
+:::
