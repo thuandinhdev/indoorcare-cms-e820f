@@ -99,7 +99,7 @@ module.exports = function(eleventyConfig) {
   );
   
   // Shortcode: slider
-  eleventyConfig.addShortcode("slider", function(imagesString) {
+  eleventyConfig.addNunjucksShortcode("slider", function(imagesString) {
     if (!imagesString) return "";
     const images = imagesString.split(",").map(img => img.trim());
     const items = images.map(img =>
