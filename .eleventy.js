@@ -101,18 +101,23 @@ module.exports = function(eleventyConfig) {
   );
   
   eleventyConfig.setLibrary("md",
-  markdownIt({ breaks: true, linkify: true })
-    .use(markdownItAnchor, { permalink: false })
-    .use(markdownItContainer, 'slider', {
-      render: function (tokens, idx) {
-        if (tokens[idx].nesting === 1) {
-          return `<div class="slider single-item bg-home-custom slider-pc">\n`;
-        } else {
-          return `</div>\n`;
+    markdownIt({ breaks: true, linkify: true })
+      .use(markdownItAnchor, { permalink: false })
+      .use(markdownItContainer, 'slider', {
+        validate: function(params) {
+          return params.trim() === 'slider';
+        },
+        render: function (tokens, idx) {
+          if (tokens[idx].nesting === 1) {
+            // opening tag
+            return `<div class="container-fluid px-0 mt-5 pt-md-4">\n<div class="slider single-item bg-home-custom slider-pc">\n`;
+          } else {
+            // closing tag
+            return `</div>\n</div>\n`;
+          }
         }
-      }
-    })
-);
+      })
+  );
   return {
     templateFormats: ["md", "njk", "liquid"],
 

@@ -9,7 +9,7 @@
 			{% include "components/nav.njk" %}
 		</header>
 
-		{% block content %}{% endblock %}
+		{{ layoutContent | safe }}
 
 		{% include "components/footer.njk" %}
 
