@@ -98,12 +98,13 @@ module.exports = function(eleventyConfig) {
     .use(markdownItAnchor, opts)
   );
   
-  eleventyConfig.addShortcode("slider", function(imagesString) {
+  eleventyConfig.addFilter("slider", function (imagesString) {
+    if (!imagesString) return "";
     const images = imagesString.split(",").map(img => img.trim());
     const items = images.map(img =>
       `<div class="bg-home-80" style="background: url('${img}') no-repeat center center / cover;"></div>`
     ).join("\n");
-  
+
     return `
       <div class="container-fluid px-0 mt-5 pt-md-4">
         <div class="slider single-item bg-home-custom slider-pc">
@@ -112,6 +113,7 @@ module.exports = function(eleventyConfig) {
       </div>
     `;
   });
+
     
   return {
     templateFormats: ["md", "njk", "liquid"],
