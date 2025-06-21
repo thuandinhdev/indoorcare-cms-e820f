@@ -13,32 +13,27 @@ window.CMS.registerEditorComponent({
       }
     }
   ],
-  pattern: /^:::slider/,
-  fromBlock: function (match, content) {
-    const imageUrls = (content || "")
-      .split("![](")
-      .slice(1)
-      .map(str => str.split(")")[0].trim());
-    return {
-      images: imageUrls
-    };
+  pattern: /^:::slider\s*\n([\s\S]*?)\n:::$/, // ✅ match markdown block
+  fromBlock: function (match) {
+    const imageMarkdown = match[1].trim().split("\n");
+    const images = imageMarkdown.map(line => {
+      const match = /!\[[^\]]*\]\((.*?)\)/.exec(line);
+      return match ? match[1] : null;
+    }).filter(Boolean);
+    return { images };
   },
   toBlock: function (obj) {
-    const imagesMarkdown = obj.images
-      .map(img => `![](${img})`)
-      .join("\n");
-    return `:::slider\n\n${imagesMarkdown}\n\n:::\n`;
+    const imageMd = obj.images.map(img => `![](${img})`).join("\n");
+    return `:::slider\n${imageMd}\n:::`;
   },
   toPreview: function (obj) {
-    if (!obj.images || obj.images.length === 0) return "";
-  
     const items = obj.images
       .map(
         (img) =>
           `<div class="bg-home-80" style="background: url('${img}') no-repeat center center / cover; height: 300px;"></div>`
       )
       .join("\n");
-  
+
     return `
       <div class="container-fluid px-0 mt-5 pt-md-4">
         <div class="slider single-item bg-home-custom slider-pc">
@@ -47,5 +42,4 @@ window.CMS.registerEditorComponent({
       </div>
     `;
   }
-  
 });

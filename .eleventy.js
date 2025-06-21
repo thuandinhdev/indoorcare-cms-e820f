@@ -6,7 +6,7 @@ const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const markdownItContainer = require("markdown-it-container");
-module.exports = function(eleventyConfig) {
+module.exports = function (eleventyConfig) {
 
   // Eleventy Navigation https://www.11ty.dev/docs/plugins/navigation/
   eleventyConfig.addPlugin(eleventyNavigationPlugin);
@@ -50,12 +50,12 @@ module.exports = function(eleventyConfig) {
   });
 
   // Minify CSS
-  eleventyConfig.addFilter("cssmin", function(code) {
+  eleventyConfig.addFilter("cssmin", function (code) {
     return new CleanCSS({}).minify(code).styles;
   });
 
   // Minify JS
-  eleventyConfig.addFilter("jsmin", function(code) {
+  eleventyConfig.addFilter("jsmin", function (code) {
     let minified = UglifyJS.minify(code);
     if (minified.error) {
       console.log("UglifyJS error: ", minified.error);
@@ -65,7 +65,7 @@ module.exports = function(eleventyConfig) {
   });
 
   // Minify HTML output
-  eleventyConfig.addTransform("htmlmin", function(content, outputPath) {
+  eleventyConfig.addTransform("htmlmin", function (content, outputPath) {
     if (outputPath.indexOf(".html") > -1) {
       let minified = htmlmin.minify(content, {
         useShortDoctype: true,
@@ -99,24 +99,52 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary("md", markdownIt(options)
     .use(markdownItAnchor, opts)
   );
-  
-  eleventyConfig.setLibrary("md",
-    markdownIt({ breaks: true, linkify: true })
-      .use(markdownItAnchor, { permalink: false })
-      .use(markdownItContainer, 'slider', {
-        validate: function(params) {
-          return params.trim() === 'slider';
-        },
-        render: function (tokens, idx) {
-          if (tokens[idx].nesting === 1) {
-            // opening tag
-            return `<div class="container-fluid px-0 mt-5 pt-md-4">\n<div class="slider single-item bg-home-custom slider-pc">\n`;
-          } else {
-            // closing tag
-            return `</div>\n</div>\n`;
+
+  eleventyConfig.setLibrary("md", markdownIt({ html: true, breaks: true, linkify: true })
+    .use(markdownItAnchor, { permalink: false })
+    .use(markdownItContainer, "slider", {
+      render(tokens, idx) {
+        if (tokens[idx].nesting === 1) {
+          // Bắt đầu :::slider
+          const nextToken = tokens[idx + 1];
+          let raw = "";
+
+          // Nếu là inline content
+          if (nextToken && nextToken.type === "fence" || nextToken.type === "paragraph_open") {
+            raw = nextToken.content || "";
           }
+
+          // Hoặc lấy nội dung từ các token text sau
+          if (!raw) {
+            raw = tokens
+              .slice(idx + 1)
+              .filter(t => t.type === "inline")
+              .map(t => t.content)
+              .join("\n");
+          }
+
+          const images = raw
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => /!\[.*\]\((.*?)\)/.test(line))
+            .map(line => {
+              const match = line.match(/!\[.*\]\((.*?)\)/);
+              return match
+                ? `<div class="bg-home-80" style="background: url('${match[1]}') no-repeat center center / cover;"></div>`
+                : "";
+            })
+            .join("\n");
+
+          return `
+<div class="container-fluid px-0 mt-5 pt-md-4">
+  <div class="slider single-item bg-home-custom slider-pc">
+    ${images}
+`;
+        } else {
+          return `  </div>\n</div>\n`;
         }
-      })
+      }
+    })
   );
   return {
     templateFormats: ["md", "njk", "liquid"],
