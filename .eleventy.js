@@ -97,7 +97,21 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary("md", markdownIt(options)
     .use(markdownItAnchor, opts)
   );
+  eleventyConfig.addShortcode("slider", function(imagesString) {
+    const images = imagesString.split(",").map(img => img.trim());
 
+    const items = images.map(img =>
+      `<div class="bg-home-80" style="background: url('${img}') no-repeat center center / cover;"></div>`
+    ).join("\n");
+
+    return `
+      <div class="container-fluid px-0 mt-5 pt-md-4">
+        <div class="slider single-item bg-home-custom slider-pc">
+          ${items}
+        </div>
+      </div>
+    `;
+  });
   return {
     templateFormats: ["md", "njk", "liquid"],
 
