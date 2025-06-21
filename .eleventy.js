@@ -2,9 +2,10 @@ const { DateTime } = require("luxon");
 const CleanCSS = require("clean-css");
 const UglifyJS = require("uglify-js");
 const htmlmin = require("html-minifier");
-const nunjucks = require("nunjucks");
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
-
+const markdownIt = require("markdown-it");
+const markdownItAnchor = require("markdown-it-anchor");
+const markdownItContainer = require("markdown-it-container");
 module.exports = function(eleventyConfig) {
 
   // Eleventy Navigation https://www.11ty.dev/docs/plugins/navigation/
@@ -99,28 +100,19 @@ module.exports = function(eleventyConfig) {
     .use(markdownItAnchor, opts)
   );
   
-  // Shortcode: slider
-  eleventyConfig.addNunjucksShortcode("slider", function(imagesString) {
-    if (!imagesString) return "";
-    const images = imagesString.split(",").map(img => img.trim());
-    const items = images.map(img =>
-      `<div class="bg-home-80" style="background: url('${img}') no-repeat center center / cover;"></div>`
-    ).join("\n");
-
-    return `
-      <div class="container-fluid px-0 mt-5 pt-md-4">
-        <div class="slider single-item bg-home-custom slider-pc">
-          ${items}
-        </div>
-      </div>
-    `;
-  });
-  
-    // Add render filter
-  eleventyConfig.addNunjucksFilter("render", function(content, ctx) {
-    return nunjucks.renderString(content, ctx);
-  });
-
+  eleventyConfig.setLibrary("md",
+  markdownIt({ breaks: true, linkify: true })
+    .use(markdownItAnchor, { permalink: false })
+    .use(markdownItContainer, 'slider', {
+      render: function (tokens, idx) {
+        if (tokens[idx].nesting === 1) {
+          return `<div class="slider single-item bg-home-custom slider-pc">\n`;
+        } else {
+          return `</div>\n`;
+        }
+      }
+    })
+);
   return {
     templateFormats: ["md", "njk", "liquid"],
 
@@ -130,7 +122,7 @@ module.exports = function(eleventyConfig) {
     // This is only used for URLs (it does not affect your file structure)
     pathPrefix: "/",
 
-    markdownTemplateEngine: "njk",
+    markdownTemplateEngine: "liquid",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
     dir: {
