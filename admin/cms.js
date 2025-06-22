@@ -112,7 +112,7 @@ window.CMS.registerEditorComponent({
       field: { name: "image", label: "Image", widget: "image" }
     }
   ],
-  pattern: /{%\s*clientlogos\s*"(.+?)"\s*%}/,
+  pattern: /{%\s*clientlogos\s*"((?:[^"\\]|\\.)*)"\s*%}/,
   fromBlock(match) {
     const parts = match[1].split("|").map(s => s.trim());
     const logos = parts[2] ? parts[2].split(",").map(i => ({ image: i })) : [];
@@ -127,8 +127,7 @@ window.CMS.registerEditorComponent({
     return `{% clientlogos "${obj.title}|${obj.description}|${logosStr}" %}`;
   },
   toPreview(obj) {
-    return `
-<section class="py-4 bg-lighter">
+    return `<section class="py-4 bg-lighter">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-12 mt-4">
