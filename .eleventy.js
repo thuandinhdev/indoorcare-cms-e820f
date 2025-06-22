@@ -6,155 +6,174 @@ const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const markdownItContainer = require("markdown-it-container");
-module.exports = function (eleventyConfig) {
 
-  // Eleventy Navigation https://www.11ty.dev/docs/plugins/navigation/
+module.exports = function (eleventyConfig) {
+  // Plugin
   eleventyConfig.addPlugin(eleventyNavigationPlugin);
 
-  // Configuration API: use eleventyConfig.addLayoutAlias(from, to) to add
-  // layout aliases! Say you have a bunch of existing content using
-  // layout: post. If you don’t want to rewrite all of those values, just map
-  // post to a new file like this:
-  // eleventyConfig.addLayoutAlias("post", "layouts/my_new_post_layout.njk");
-
-  // Merge data instead of overriding
-  // https://www.11ty.dev/docs/data-deep-merge/
+  // Merge data
   eleventyConfig.setDataDeepMerge(true);
 
-  // Add support for maintenance-free post authors
-  // Adds an authors collection using the author key in our post frontmatter
-  // Thanks to @pdehaan: https://github.com/pdehaan
+  // Collection authors
   eleventyConfig.addCollection("authors", collection => {
     const blogs = collection.getFilteredByGlob("posts/*.md");
     return blogs.reduce((coll, post) => {
       const author = post.data.author;
-      if (!author) {
-        return coll;
-      }
-      if (!coll.hasOwnProperty(author)) {
-        coll[author] = [];
-      }
+      if (!author) return coll;
+      if (!coll.hasOwnProperty(author)) coll[author] = [];
       coll[author].push(post.data);
       return coll;
     }, {});
   });
 
-  // Date formatting (human readable)
-  eleventyConfig.addFilter("readableDate", dateObj => {
-    return DateTime.fromJSDate(dateObj).toFormat("dd LLL yyyy");
-  });
-
-  // Date formatting (machine readable)
-  eleventyConfig.addFilter("machineDate", dateObj => {
-    return DateTime.fromJSDate(dateObj).toFormat("yyyy-MM-dd");
-  });
-
-  // Minify CSS
-  eleventyConfig.addFilter("cssmin", function (code) {
-    return new CleanCSS({}).minify(code).styles;
-  });
-
-  // Minify JS
-  eleventyConfig.addFilter("jsmin", function (code) {
+  // Filters
+  eleventyConfig.addFilter("readableDate", dateObj => DateTime.fromJSDate(dateObj).toFormat("dd LLL yyyy"));
+  eleventyConfig.addFilter("machineDate", dateObj => DateTime.fromJSDate(dateObj).toFormat("yyyy-MM-dd"));
+  eleventyConfig.addFilter("cssmin", code => new CleanCSS({}).minify(code).styles);
+  eleventyConfig.addFilter("jsmin", code => {
     let minified = UglifyJS.minify(code);
     if (minified.error) {
-      console.log("UglifyJS error: ", minified.error);
+      console.log("UglifyJS error:", minified.error);
       return code;
     }
     return minified.code;
   });
 
-  // Minify HTML output
-  eleventyConfig.addTransform("htmlmin", function (content, outputPath) {
-    if (outputPath.indexOf(".html") > -1) {
-      let minified = htmlmin.minify(content, {
+  // HTML minify
+  eleventyConfig.addTransform("htmlmin", (content, outputPath) => {
+    if (outputPath.endsWith(".html")) {
+      return htmlmin.minify(content, {
         useShortDoctype: true,
         removeComments: true,
         collapseWhitespace: true
       });
-      return minified;
     }
     return content;
   });
 
-  // Don't process folders with static assets e.g. images
+  // Passthrough copy
   eleventyConfig.addPassthroughCopy("favicon.ico");
   eleventyConfig.addPassthroughCopy("static/img");
   eleventyConfig.addPassthroughCopy("admin/");
   eleventyConfig.addPassthroughCopy("assets/");
-  // We additionally output a copy of our CSS for use in Decap CMS previews
   eleventyConfig.addPassthroughCopy("_includes/assets/css/inline.css");
 
-  /* Markdown Plugins */
-  let markdownIt = require("markdown-it");
-  let markdownItAnchor = require("markdown-it-anchor");
-  let options = {
+  // Markdown config
+  const options = {
+    html: true,
     breaks: true,
     linkify: true
   };
-  let opts = {
-    permalink: false
-  };
 
-  eleventyConfig.setLibrary("md", markdownIt(options)
-    .use(markdownItAnchor, opts)
-  );
-
-  eleventyConfig.setLibrary("md", markdownIt({ html: true, breaks: true, linkify: true })
+  const mdLib = markdownIt(options)
     .use(markdownItAnchor, { permalink: false })
     .use(markdownItContainer, "slider", {
       render(tokens, idx) {
         if (tokens[idx].nesting === 1) {
-          // Bắt đầu :::slider
-          const nextToken = tokens[idx + 1];
-          let raw = "";
+          const contentTokens = [];
 
-          // Nếu là inline content
-          if (nextToken && nextToken.type === "fence" || nextToken.type === "paragraph_open") {
-            raw = nextToken.content || "";
+          for (let i = idx + 1; i < tokens.length; i++) {
+            const t = tokens[i];
+            if (t.type === "container_slider_close") break;
+
+            if (t.type === "inline") {
+              contentTokens.push(...t.children);
+              t.children = [];
+            }
+
+            if (t.type === "paragraph_open" || t.type === "paragraph_close") {
+              t.type = "text";
+              t.tag = "";
+              t.content = "";
+              t.hidden = true;
+            }
           }
 
-          // Hoặc lấy nội dung từ các token text sau
-          if (!raw) {
-            raw = tokens
-              .slice(idx + 1)
-              .filter(t => t.type === "inline")
-              .map(t => t.content)
-              .join("\n");
-          }
-
-          const images = raw
-            .split("\n")
-            .map(line => line.trim())
-            .filter(line => /!\[.*\]\((.*?)\)/.test(line))
-            .map(line => {
-              const match = line.match(/!\[.*\]\((.*?)\)/);
-              return match
-                ? `<div class="bg-home-80" style="background: url('${match[1]}') no-repeat center center / cover;"></div>`
-                : "";
-            })
+          const images = contentTokens
+            .filter(t => t.type === "image")
+            .map(t =>
+              `<div class="bg-home-80" style="background: url('${t.attrGet("src")}') no-repeat center center / cover;"></div>`
+            )
             .join("\n");
 
-          return `
-<div class="container-fluid px-0 mt-5 pt-md-4">
-  <div class="slider single-item bg-home-custom slider-pc">
-    ${images}
-`;
+          return `<div class="container-fluid px-0 mt-5 pt-md-4">
+                  <div class="slider single-item bg-home-custom slider-pc">
+                ${images}
+                `;
         } else {
           return `  </div>\n</div>\n`;
         }
       }
     })
-  );
+    .use(markdownItContainer, "cardproducts", {
+      render(tokens, idx) {
+        if (tokens[idx].nesting === 1) {
+          const contentTokens = [];
+
+          for (let i = idx + 1; i < tokens.length; i++) {
+            const t = tokens[i];
+            if (t.type === "container_cardproducts_close") break;
+
+            if (t.type === "inline") {
+              contentTokens.push(...t.children);
+              t.children = [];
+            }
+
+            if (t.type === "paragraph_open" || t.type === "paragraph_close") {
+              t.type = "text";
+              t.tag = "";
+              t.content = "";
+              t.hidden = true;
+            }
+          }
+
+          const rawText = contentTokens
+            .filter(t => t.type === "text")
+            .map(t => t.content)
+            .join("\n");
+
+          const items = rawText
+            .split("- image:")
+            .slice(1)
+            .map(block => {
+              const lines = block.trim().split("\n").map(l => l.trim());
+              const image = lines[0];
+              const link = (lines.find(l => l.startsWith("link:")) || "").replace("link:", "").trim();
+              const title = (lines.find(l => l.startsWith("title:")) || "").replace("title:", "").trim();
+
+              return `<div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
+                <div class="card blog rounded border-0 shadow-lg">
+                  <a href="${link}">
+                    <div class="position-relative">
+                      <img src="${image}" class="card-img-top rounded-top" alt="${title}">
+                      <div class="overlay rounded-top bg-dark"></div>
+                    </div>
+                  </a>
+                  <div class="card-body content p-2 p-lg-4">
+                    <h5 class="text-center"><a href="${link}" class="card-title title text-dark">${title}</a></h5>
+                  </div>
+                </div>
+              </div>`;
+            }).join("\n");
+
+          return `<section class="d-table w-100 mt-4 mb-5" id="home">
+            <div class="container">
+              <div class="row">
+          ${items}
+          `;
+        } else {
+          return `</div>
+              </div>
+            </section>\n`;
+        }
+      }
+    });
+
+  eleventyConfig.setLibrary("md", mdLib);
+
   return {
     templateFormats: ["md", "njk", "liquid"],
-
-    // If your site lives in a different subdirectory, change this.
-    // Leading or trailing slashes are all normalized away, so don’t worry about it.
-    // If you don’t have a subdirectory, use "" or "/" (they do the same thing)
-    // This is only used for URLs (it does not affect your file structure)
     pathPrefix: "/",
-
     markdownTemplateEngine: "liquid",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
