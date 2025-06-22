@@ -98,24 +98,29 @@ window.CMS.registerEditorComponent({
 </section>`;
   }
 });
+
 window.CMS.registerEditorComponent({
   id: "clientlogos",
   label: "Client Logos",
   fields: [
     { name: "title", label: "Title", widget: "string" },
-    { name: "description", label: "Description", widget: "text" },
+    { name: "description", label: "Description", widget: "string" },
     {
       name: "logos",
       label: "Logos",
       widget: "list",
-      field: { name: "image", label: "Logo Image", widget: "image" }
+      field: { name: "image", label: "Image", widget: "image" }
     }
   ],
   pattern: /{%\s*clientlogos\s*"(.+?)"\s*%}/,
   fromBlock(match) {
-    const [title, description, logosRaw] = match[1].split("|").map(s => s.trim());
-    const logos = logosRaw ? logosRaw.split(",").map(image => ({ image: image.trim() })) : [];
-    return { title, description, logos };
+    const parts = match[1].split("|").map(s => s.trim());
+    const logos = parts[2] ? parts[2].split(",").map(i => ({ image: i })) : [];
+    return {
+      title: parts[0] || "",
+      description: parts[1] || "",
+      logos
+    };
   },
   toBlock(obj) {
     const logosStr = obj.logos.map(l => l.image).join(",");
@@ -135,7 +140,8 @@ window.CMS.registerEditorComponent({
           ${obj.logos.map(l => `
             <div class="media customer-brand m-2">
               <img src="${l.image}" class="avatar avatar-small mr-3 rounded shadow bg-white" alt="">
-            </div>`).join("")}
+            </div>
+          `).join("")}
         </div>
       </div>
     </div>
