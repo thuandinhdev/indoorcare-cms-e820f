@@ -135,14 +135,13 @@ module.exports = function (eleventyConfig) {
     });
         
   eleventyConfig.setLibrary("md", mdLib);
-  eleventyConfig.addShortcode("clientlogos", function (input) {
-    const [title, description, logosRaw] = input.split("|").map(s => s.trim());
-    const logos = logosRaw
-      ? logosRaw.split(",").map(image => `
-        <div class="media customer-brand m-2">
-          <img src="${image}" class="avatar avatar-small mr-3 rounded shadow bg-white" alt="">
-        </div>`).join("")
-      : "";
+  eleventyConfig.addShortcode("clientlogos", function (raw) {
+    const [title, description, logosStr] = raw.split("|").map(p => p.trim());
+    const logos = (logosStr || "").split(",").map(src => `
+      <div class="media customer-brand m-2">
+        <img src="${src}" class="avatar avatar-small mr-3 rounded shadow bg-white" alt="">
+      </div>
+    `).join("");
   
     return `
   <section class="py-4 bg-lighter">
@@ -159,8 +158,10 @@ module.exports = function (eleventyConfig) {
         </div>
       </div>
     </div>
-  </section>`;
+  </section>
+    `;
   });
+  
   return {
     templateFormats: ["md", "njk", "liquid"],
     pathPrefix: "/",
