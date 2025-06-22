@@ -17,4 +17,4 @@ test
 ![](/static/img/bg5.jpg)
 :::
 
-{% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0)" %}
+{% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0),/static/img/card3.jpg|test|javascript:void(0),/static/img/card4.jpg|test|javascript:void(0)" %}
