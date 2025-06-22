@@ -17,12 +17,4 @@ test
 ![](/static/img/bg5.jpg)
 :::
 
-:::cardproducts
-- image: /static/img/card1.jpg
-  link: javascript:void(0)
-  title: test
-
-- image: /static/img/card2.jpg
-  link: javascript:void(0)
-  title: undefined
-:::
+{% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0)" %}
