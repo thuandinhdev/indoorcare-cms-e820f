@@ -135,7 +135,32 @@ module.exports = function (eleventyConfig) {
     });
         
   eleventyConfig.setLibrary("md", mdLib);
-
+  eleventyConfig.addShortcode("clientlogos", function (input) {
+    const [title, description, logosRaw] = input.split("|").map(s => s.trim());
+    const logos = logosRaw
+      ? logosRaw.split(",").map(image => `
+        <div class="media customer-brand m-2">
+          <img src="${image}" class="avatar avatar-small mr-3 rounded shadow bg-white" alt="">
+        </div>`).join("")
+      : "";
+  
+    return `
+  <section class="py-4 bg-lighter">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-12 mt-4">
+          <div class="section-title mb-2 pb-2 text-center">
+            <h1 class="title font-weight-bold">${title}</h1>
+            <p class="text-muted mx-auto mb-0">${description}</p>
+          </div>
+          <div id="customer-brand" class="owl-carousel owl-theme">
+            ${logos}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+  });
   return {
     templateFormats: ["md", "njk", "liquid"],
     pathPrefix: "/",

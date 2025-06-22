@@ -98,3 +98,48 @@ window.CMS.registerEditorComponent({
 </section>`;
   }
 });
+window.CMS.registerEditorComponent({
+  id: "clientlogos",
+  label: "Client Logos",
+  fields: [
+    { name: "title", label: "Title", widget: "string" },
+    { name: "description", label: "Description", widget: "text" },
+    {
+      name: "logos",
+      label: "Logos",
+      widget: "list",
+      field: { name: "image", label: "Logo Image", widget: "image" }
+    }
+  ],
+  pattern: /{%\s*clientlogos\s*"(.+?)"\s*%}/,
+  fromBlock(match) {
+    const [title, description, logosRaw] = match[1].split("|").map(s => s.trim());
+    const logos = logosRaw ? logosRaw.split(",").map(image => ({ image: image.trim() })) : [];
+    return { title, description, logos };
+  },
+  toBlock(obj) {
+    const logosStr = obj.logos.map(l => l.image).join(",");
+    return `{% clientlogos "${obj.title}|${obj.description}|${logosStr}" %}`;
+  },
+  toPreview(obj) {
+    return `
+<section class="py-4 bg-lighter">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-12 mt-4">
+        <div class="section-title mb-2 pb-2 text-center">
+          <h1 class="title font-weight-bold">${obj.title}</h1>
+          <p class="text-muted mx-auto mb-0">${obj.description}</p>
+        </div>
+        <div id="customer-brand" class="owl-carousel owl-theme">
+          ${obj.logos.map(l => `
+            <div class="media customer-brand m-2">
+              <img src="${l.image}" class="avatar avatar-small mr-3 rounded shadow bg-white" alt="">
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`;
+  }
+});
