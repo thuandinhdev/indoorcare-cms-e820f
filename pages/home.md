@@ -7,7 +7,7 @@ eleventyNavigation:
   key: Home
   order: 0
 ---
-test
+
 
 :::slider
 ![](/static/img/bg1.jpg)
@@ -19,4 +19,4 @@ test
 
 {% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0),/static/img/card3.jpg|test|javascript:void(0),/static/img/card4.jpg|test|javascript:void(0)" %}
 
-{% clientlogos '{"title":"test","description":"test","logos":["/static/img/brand1.png"]}' %}
+{% clientlogos '{"title":"test","description":"test","logos":["/static/img/brand1.png","/static/img/brand10.png","/static/img/brand18.png","/static/img/brand18.png","/static/img/brand16.png"]}' %}
