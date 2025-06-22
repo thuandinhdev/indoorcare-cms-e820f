@@ -108,26 +108,24 @@ module.exports = function (eleventyConfig) {
     eleventyConfig.addShortcode("cardproducts", function (input) {
       const items = input.split(",").map(p => {
         const [image, title, link] = p.split("|").map(s => s.trim());
-        return `
-    <div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
-      <div class="card blog rounded border-0 shadow-lg">
-        <a href="${link}">
-          <div class="position-relative">
-            <img src="${image}" class="card-img-top rounded-top" alt="${title}">
-            <div class="overlay rounded-top bg-dark"></div>
+        return `<div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
+          <div class="card blog rounded border-0 shadow-lg">
+            <a href="${link}">
+              <div class="position-relative">
+                <img src="${image}" class="card-img-top rounded-top" alt="${title}">
+                <div class="overlay rounded-top bg-dark"></div>
+              </div>
+            </a>
+            <div class="card-body content p-2 p-lg-4">
+              <h5 class="text-center">
+                <a href="${link}" class="card-title title text-dark">${title}</a>
+              </h5>
+            </div>
           </div>
-        </a>
-        <div class="card-body content p-2 p-lg-4">
-          <h5 class="text-center">
-            <a href="${link}" class="card-title title text-dark">${title}</a>
-          </h5>
-        </div>
-      </div>
-    </div>`;
+        </div>`;
       }).join("\n");
     
-      return `
-    <section class="d-table w-100 mt-4 mb-5" id="home">
+      return `<section class="d-table w-100 mt-4 mb-5" id="home">
       <div class="container">
         <div class="row">
           ${items}
