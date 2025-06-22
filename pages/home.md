@@ -18,3 +18,5 @@ test
 :::
 
 {% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0),/static/img/card3.jpg|test|javascript:void(0),/static/img/card4.jpg|test|javascript:void(0)" %}
+
+{% clientlogos "tesst|test|,,," %}
