@@ -32,6 +32,7 @@
     "uglify-js": "^3.17.4"
   },
   "dependencies": {
+    "js-yaml": "^4.1.0",
     "markdown-it-container": "^4.0.0"
   }
 }

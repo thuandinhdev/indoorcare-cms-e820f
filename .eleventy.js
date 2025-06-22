@@ -105,70 +105,37 @@ module.exports = function (eleventyConfig) {
         }
       }
     })
-    .use(markdownItContainer, "cardproducts", {
-      render(tokens, idx) {
-        if (tokens[idx].nesting === 1) {
-          const contentTokens = [];
-
-          for (let i = idx + 1; i < tokens.length; i++) {
-            const t = tokens[i];
-            if (t.type === "container_cardproducts_close") break;
-
-            if (t.type === "inline") {
-              contentTokens.push(...t.children);
-              t.children = [];
-            }
-
-            if (t.type === "paragraph_open" || t.type === "paragraph_close") {
-              t.type = "text";
-              t.tag = "";
-              t.content = "";
-              t.hidden = true;
-            }
-          }
-
-          const rawText = contentTokens
-            .filter(t => t.type === "text")
-            .map(t => t.content)
-            .join("\n");
-
-          const items = rawText
-            .split("- image:")
-            .slice(1)
-            .map(block => {
-              const lines = block.trim().split("\n").map(l => l.trim());
-              const image = lines[0];
-              const link = (lines.find(l => l.startsWith("link:")) || "").replace("link:", "").trim();
-              const title = (lines.find(l => l.startsWith("title:")) || "").replace("title:", "").trim();
-
-              return `<div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
-                <div class="card blog rounded border-0 shadow-lg">
-                  <a href="${link}">
-                    <div class="position-relative">
-                      <img src="${image}" class="card-img-top rounded-top" alt="${title}">
-                      <div class="overlay rounded-top bg-dark"></div>
-                    </div>
-                  </a>
-                  <div class="card-body content p-2 p-lg-4">
-                    <h5 class="text-center"><a href="${link}" class="card-title title text-dark">${title}</a></h5>
-                  </div>
-                </div>
-              </div>`;
-            }).join("\n");
-
-          return `<section class="d-table w-100 mt-4 mb-5" id="home">
-            <div class="container">
-              <div class="row">
+    eleventyConfig.addShortcode("cardproducts", function (input) {
+      const items = input.split(",").map(p => {
+        const [image, title, link] = p.split("|").map(s => s.trim());
+        return `
+    <div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
+      <div class="card blog rounded border-0 shadow-lg">
+        <a href="${link}">
+          <div class="position-relative">
+            <img src="${image}" class="card-img-top rounded-top" alt="${title}">
+            <div class="overlay rounded-top bg-dark"></div>
+          </div>
+        </a>
+        <div class="card-body content p-2 p-lg-4">
+          <h5 class="text-center">
+            <a href="${link}" class="card-title title text-dark">${title}</a>
+          </h5>
+        </div>
+      </div>
+    </div>`;
+      }).join("\n");
+    
+      return `
+    <section class="d-table w-100 mt-4 mb-5" id="home">
+      <div class="container">
+        <div class="row">
           ${items}
-          `;
-        } else {
-          return `</div>
-              </div>
-            </section>\n`;
-        }
-      }
+        </div>
+      </div>
+    </section>`;
     });
-
+        
   eleventyConfig.setLibrary("md", mdLib);
 
   return {

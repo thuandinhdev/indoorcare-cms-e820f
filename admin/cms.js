@@ -42,7 +42,6 @@ window.CMS.registerEditorComponent({
     `;
   }
 });
-
 window.CMS.registerEditorComponent({
   id: "cardproducts",
   label: "Product Cards",
@@ -53,50 +52,47 @@ window.CMS.registerEditorComponent({
       widget: "list",
       fields: [
         { name: "image", label: "Image", widget: "image" },
-        { name: "link", label: "Link", widget: "string", default: "javascript:void(0)" },
-        { name: "title", label: "Title", widget: "string" }
+        { name: "title", label: "Title", widget: "string" },
+        { name: "link", label: "Link", widget: "string", default: "javascript:void(0)" }
       ]
     }
   ],
-  pattern: /^:::cardproducts\s*([\s\S]*?):::/,
-  fromBlock: function (match) {
-    const lines = match[1].split("- image:").slice(1);
-    return {
-      products: lines.map(block => {
-        const parts = block.trim().split("\n").map(l => l.trim());
-        return {
-          image: parts[0],
-          link: (parts.find(l => l.startsWith("link:")) || "").replace("link:", "").trim(),
-          title: (parts.find(l => l.startsWith("title:")) || "").replace("title:", "").trim()
-        };
-      })
-    };
+  pattern: /{%\s*cardproducts\s*"(.+?)"\s*%}/,
+  fromBlock(match) {
+    const raw = match[1];
+    const products = raw.split(",").map(p => {
+      const [image, title, link] = p.split("|").map(s => s.trim());
+      return { image, title, link };
+    });
+    return { products };
   },
-  toBlock: function (obj) {
-    return `:::cardproducts\n` + obj.products.map(p => 
-      `- image: ${p.image}\n  link: ${p.link}\n  title: ${p.title}`
-    ).join("\n\n") + `\n:::`;
+  toBlock(obj) {
+    const str = obj.products
+      .map(p => `${p.image}|${p.title}|${p.link}`)
+      .join(",");
+    return `{% cardproducts "${str}" %}`;
   },
-  toPreview: function (obj) {
+  toPreview(obj) {
     return `
 <section class="d-table w-100 mt-4 mb-5" id="home">
   <div class="container">
     <div class="row">
       ${obj.products.map(p => `
-      <div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
-        <div class="card blog rounded border-0 shadow-lg">
-          <a href="${p.link}">
-            <div class="position-relative">
-              <img src="${p.image}" class="card-img-top rounded-top" alt="${p.title}">
-              <div class="overlay rounded-top bg-dark"></div>
+        <div class="col-lg-3 col-md-6 col-6 mt-4 pt-2">
+          <div class="card blog rounded border-0 shadow-lg">
+            <a href="${p.link}">
+              <div class="position-relative">
+                <img src="${p.image}" class="card-img-top rounded-top" alt="${p.title}">
+                <div class="overlay rounded-top bg-dark"></div>
+              </div>
+            </a>
+            <div class="card-body content p-2 p-lg-4">
+              <h5 class="text-center">
+                <a href="${p.link}" class="card-title title text-dark">${p.title}</a>
+              </h5>
             </div>
-          </a>
-          <div class="card-body content p-2 p-lg-4">
-            <h5 class="text-center"><a href="${p.link}" class="card-title title text-dark">${p.title}</a></h5>
           </div>
-        </div>
-      </div>
-      `).join("")}
+        </div>`).join("")}
     </div>
   </div>
 </section>`;
