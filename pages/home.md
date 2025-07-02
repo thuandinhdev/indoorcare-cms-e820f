@@ -13,6 +13,7 @@ eleventyNavigation:
 ![](/static/img/bg3.jpg)
 ![](/static/img/bg4.jpg)
 ![](/static/img/bg5.jpg)
+![](/static/img/bg2.jpg)
 :::
 
 {% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0),/static/img/card3.jpg|test|javascript:void(0),/static/img/card4.jpg|test|javascript:void(0)" %}
