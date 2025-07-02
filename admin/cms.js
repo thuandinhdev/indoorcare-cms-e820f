@@ -104,7 +104,6 @@ window.CMS.registerEditorComponent({
   label: "Client Logos",
   fields: [
     { name: "title", label: "Title", widget: "string" },
-    { name: "description", label: "Description", widget: "string" },
     {
       name: "logos",
       label: "Logos",
@@ -117,7 +116,7 @@ window.CMS.registerEditorComponent({
     try {
       return JSON.parse(match[1]);
     } catch (e) {
-      return { title: "", description: "", logos: [] };
+      return { title: "", logos: [] };
     }
   },
 
@@ -132,7 +131,6 @@ window.CMS.registerEditorComponent({
       <div class="col-lg-12 mt-4">
         <div class="section-title mb-2 pb-2 text-center">
           <h1 class="title font-weight-bold">${obj.title}</h1>
-          <p class="text-muted mx-auto mb-0">${obj.description}</p>
         </div>
         <div id="customer-brand" class="owl-carousel owl-theme">
           ${obj.logos.map(l => `
@@ -145,5 +143,190 @@ window.CMS.registerEditorComponent({
     </div>
   </div>
 </section>`;
+  }
+});
+
+window.CMS.registerEditorComponent({
+  id: "titlesection",
+  label: "Title Section",
+  fields: [
+    {
+      name: "tag",
+      label: "Heading Level",
+      widget: "select",
+      default: "h2",
+      options: ["h2", "h3", "h4", "h5"]
+    },
+    {
+      name: "title",
+      label: "Title",
+      widget: "string"
+    },
+    {
+      name: "description",
+      label: "Description",
+      widget: "string"
+    }
+  ],
+  pattern: /{%\s*titlesection\s*"(.+?)"\s*%}/,
+  fromBlock(match) {
+    const [tag, title, description] = match[1].split("|").map(s => s.trim());
+    return { tag, title, description };
+  },
+  toBlock(obj) {
+    return `{% titlesection "${obj.tag}|${obj.title}|${obj.description}" %}`;
+  },
+  toPreview(obj) {
+    return `
+    <div class="container mt-100 mt-60">
+      <div class="row justify-content-center">
+        <div class="col-12 text-center">
+          <div class="section-title mb-4 pb-2">
+            <${obj.tag || "h2"} class="title mb-4 font-weight-bold">${obj.title}</${obj.tag}>
+            <h2 class="display-4 font-weight-bold">${obj.description}</h2>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+});
+
+
+
+window.CMS.registerEditorComponent({
+  id: "textsection",
+  label: "Text",
+  fields: [
+    {
+      name: "text",
+      label: "Text",
+      widget: "text"
+    }
+  ],
+  pattern: /^:::textsection\s*\n([\s\S]*?)\n:::$/,
+  fromBlock: function(match) {
+    return {
+      text: match[1].trim()
+    };
+  },
+  toBlock: function(obj) {
+    return `:::textsection\n${obj.text}\n:::`;
+  },
+  toPreview: function(obj) {
+    return `<div class="my-4"><p>${obj.text.replace(/\n/g, "<br>")}</p></div>`;
+  }
+});
+
+window.CMS.registerEditorComponent({
+  id: "imagetextgroup",
+  label: "Image + Text",
+  fields: [
+    {
+      name: "size",
+      label: "Size",
+      widget: "select",
+      default: "style1",
+      options: [
+        { label: "Style1", value: "style1" },
+        { label: "Style2", value: "style2" },
+        { label: "Style3", value: "style3" }
+      ]
+    },
+    {
+      name: "blocks",
+      label: "Blocks",
+      widget: "list",
+      fields: [
+        {
+          name: "image",
+          label: "Image",
+          widget: "image"
+        },
+        {
+          name: "title",
+          label: "Title",
+          widget: "string"
+        },
+        {
+          name: "description",
+          label: "Description",
+          widget: "text"
+        }
+      ]
+    }
+  ],
+  pattern: /^:::imagetextgroup\s*\n([\s\S]*?)\n:::$/,
+  fromBlock(match) {
+    try {
+      return JSON.parse(match[1].trim());
+    } catch (e) {
+      console.error("JSON parse error in imagetextgroup block:", e);
+      return {};
+    }
+  },
+  toBlock(obj) {
+    return `:::imagetextgroup\n${JSON.stringify(obj, null, 2)}\n:::`;
+  },
+  toPreview(obj) {
+    return `
+      <div class="image-text-group ${obj.size || "style1"}">
+        ${(obj.blocks || [])
+          .map(
+            b => `
+            <div class="block my-4">
+              <img src="${b.image}" style="max-width: 100%; margin-bottom: 0.5rem;" />
+              <h4>${b.title || ""}</h4>
+              <p>${(b.description || "").replace(/\n/g, "<br>")}</p>
+            </div>`
+          )
+          .join("")}
+      </div>
+    `;
+  }
+});
+
+window.CMS.registerEditorComponent({
+  id: "image",
+  label: "Images",
+  fields: [
+    {
+      name: "size",
+      label: "Size",
+      widget: "select",
+      default: "small",
+      options: [
+        { label: "Small", value: "small" },
+        { label: "Large", value: "large" }
+      ]
+    },
+    {
+      name: "images",
+      label: "Images",
+      widget: "list",
+      field: {
+        name: "image",
+        label: "Image",
+        widget: "image"
+      }
+    }
+  ],
+  pattern: /^:::imagecustom\s*\n([\s\S]+?)\n:::/,
+  fromBlock(match) {
+    try {
+      return JSON.parse(match[1].trim());
+    } catch (e) {
+      return { images: [], size: "small" };
+    }
+  },
+  toBlock(obj) {
+    return `:::imagecustom\n${JSON.stringify(obj, null, 2)}\n:::`;
+  },
+  toPreview(obj) {
+    const imgStyle = obj.size === "large" ? "width: 100%;" : "width: 50%;";
+    return `
+      <div style="margin: 1rem 0;">
+        ${(obj.images || []).map(img => `<img src="${img}" style="${imgStyle}; margin-bottom: 10px;" />`).join("")}
+      </div>
+    `;
   }
 });

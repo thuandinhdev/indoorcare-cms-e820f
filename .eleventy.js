@@ -135,31 +135,50 @@ module.exports = function (eleventyConfig) {
     });
         
   eleventyConfig.setLibrary("md", mdLib);
-  eleventyConfig.addShortcode("clientlogos", function (raw) {
-    const [title, description, logosStr] = raw.split("|").map(p => p.trim());
-    const logos = (logosStr || "").split(",").map(src => `
-      <div class="media customer-brand m-2">
+
+  eleventyConfig.addShortcode("clientlogos", function (jsonStr) {
+    let data;
+    try {
+      data = JSON.parse(jsonStr);
+    } catch (e) {
+      console.error("Invalid JSON passed to clientlogos:", jsonStr);
+      return "";
+    }
+  
+    const logosHtml = (data.logos || []).map(src => `<div class="media customer-brand m-2">
         <img src="${src}" class="avatar avatar-small mr-3 rounded shadow bg-white" alt="">
       </div>
     `).join("");
   
-    return `
-  <section class="py-4 bg-lighter">
+    return `<section class="py-4 bg-lighter">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-12 mt-4">
           <div class="section-title mb-2 pb-2 text-center">
-            <h1 class="title font-weight-bold">${title}</h1>
-            <p class="text-muted mx-auto mb-0">${description}</p>
+            <h1 class="title font-weight-bold">${data.title || ""}</h1>
           </div>
           <div id="customer-brand" class="owl-carousel owl-theme">
-            ${logos}
+            ${logosHtml}
           </div>
         </div>
       </div>
     </div>
-  </section>
-    `;
+  </section>`;
+  });
+  
+  eleventyConfig.addShortcode("titlesection", function (input) {
+    const [tag, title, description] = input.split("|").map(s => s.trim());
+    return `
+      <div class="container mt-100 mt-60">
+        <div class="row justify-content-center">
+          <div class="col-12 text-center">
+            <div class="section-title mb-4 pb-2">
+              <${tag || "h2"} class="title mb-4 font-weight-bold">${title}</${tag}>
+              <h2 class="display-4 font-weight-bold">${description}</h2>
+            </div>
+          </div>
+        </div>
+      </div>`;
   });
   
   return {
