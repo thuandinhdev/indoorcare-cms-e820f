@@ -16,10 +16,7 @@ eleventyNavigation:
 ![](/static/img/bg2.jpg)
 :::
 
-:::titlesection tag=h2
-Thanh lọc toàn diện bụi mịn, formaldehyde và vi rút
-Dòng ProceCare
-:::
+{% titlesection "h2|Thanh lọc toàn diện bụi mịn, formaldehyde và vi rút|Dòng ProceCare" %}
 
 {% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0),/static/img/card3.jpg|test|javascript:void(0),/static/img/card4.jpg|test|javascript:void(0)" %}
 
