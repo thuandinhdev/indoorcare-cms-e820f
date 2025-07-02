@@ -310,22 +310,24 @@ window.CMS.registerEditorComponent({
       }
     }
   ],
-  pattern: /^:::imagecustom\s*\n([\s\S]+?)\n:::/,
+  pattern: /{%\s*image\s*"(.+?)"\s*%}/,
   fromBlock(match) {
-    try {
-      return JSON.parse(match[1].trim());
-    } catch (e) {
-      return { images: [], size: "small" };
-    }
+    const [size, imageStr] = match[1].split("|");
+    const images = imageStr.split(",").map(i => i.trim()).filter(Boolean);
+    return { size: size.trim(), images };
   },
   toBlock(obj) {
-    return `:::imagecustom\n${JSON.stringify(obj, null, 2)}\n:::`;
+    const size = obj.size || "small";
+    const images = (obj.images || []).join(",");
+    return `{% image "${size}|${images}" %}`;
   },
   toPreview(obj) {
     const imgStyle = obj.size === "large" ? "width: 100%;" : "width: 50%;";
     return `
       <div style="margin: 1rem 0;">
-        ${(obj.images || []).map(img => `<img src="${img}" style="${imgStyle}; margin-bottom: 10px;" />`).join("")}
+        ${(obj.images || [])
+          .map(img => `<img src="${img}" style="${imgStyle}; margin-bottom: 10px;" />`)
+          .join("")}
       </div>
     `;
   }

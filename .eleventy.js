@@ -173,13 +173,27 @@ module.exports = function (eleventyConfig) {
         <div class="row justify-content-center">
           <div class="col-12 text-center">
             <div class="section-title mb-4 pb-2">
-              <${tag || "h2"} class="title mb-4 font-weight-bold">${title}</${tag}>
-              <h2 class="display-4 font-weight-bold">${description}</h2>
+              <${tag || "h2"} class="title mb-4 font-weight-bold">${description}</${tag}>
+              <h2 class="display-4 font-weight-bold">${title}</h2>
             </div>
           </div>
         </div>
       </div>`;
   });
+  
+  eleventyConfig.addShortcode("image", function (input) {
+    const [size, imagesRaw] = input.split("|").map(s => s.trim());
+    const imgStyle = size === "large" ? "width: 100%;" : "width: 50%;";
+    const images = (imagesRaw || "").split(",").filter(Boolean);
+  
+    return `
+      <div style="margin: 1rem 0;">
+        ${images.map(img => `<img src="${img}" style="${imgStyle}; margin-bottom: 10px;" />`).join("")}
+      </div>
+    `;
+  });
+  
+
   
   return {
     templateFormats: ["md", "njk", "liquid"],
