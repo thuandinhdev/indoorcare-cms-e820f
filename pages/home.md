@@ -17,4 +17,4 @@ eleventyNavigation:
 
 {% cardproducts "/static/img/card1.jpg|test|javascript:void(0),/static/img/card2.jpg|test|javascript:void(0),/static/img/card3.jpg|test|javascript:void(0),/static/img/card4.jpg|test|javascript:void(0)" %}
 
-{% clientlogos '{"title":"KHÁCH HÀNG – AIRPROCE","description":"test","logos":["/static/img/brand1.png","/static/img/brand10.png","/static/img/brand18.png","/static/img/brand18.png","/static/img/brand16.png"]}' %}
+{% clientlogos '{"title":"KHÁCH HÀNG – AIRPROCE","description":"test","logos":["/static/img/brand1.png","/static/img/brand10.png","/static/img/brand18.png","/static/img/brand18.png","/static/img/brand16.png","/static/img/brand20.png","/static/img/brand1.png"]}' %}
