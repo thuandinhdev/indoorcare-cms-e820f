@@ -316,6 +316,43 @@ eleventyConfig.addShortcode("imagetextgroup", function (input) {
   `;
 });
 
+eleventyConfig.addShortcode("youtubeinfoblock", function (jsonStr) {
+  let data;
+  try {
+    data = JSON.parse(jsonStr);
+  } catch (e) {
+    console.error("Invalid JSON passed to youtubeinfoblock:", jsonStr);
+    return "";
+  }
+
+  const youtubeEmbed = (data.youtube || "").replace("watch?v=", "embed/");
+
+  return `
+    <div class="rounded mt-4">
+        <div class="row">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="embed-responsive embed-responsive-16by9 col-lg-6 col-md-6 col-12 mt-4 pt-2 rounded">
+                        <iframe class="embed-responsive-item" src="${youtubeEmbed}" allowfullscreen></iframe>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-12 mt-4 pt-2">
+                        <div class="section-title ml-lg-5">
+                            <ul class="font-weight-bold">
+                            ${(data.infos || []).map(i => `<li class="mb-0"><span class="text-primary h5 mr-2"><i class="uim uim-check-circle"></i></span>${i.info}</li>`).join("")}
+                            </ul>
+                            <div class="d-flex flex-row-reverse mt-2">
+                                <a href="javascript:void(0)" class="btn btn-primary mr-5">XEM CHI TIẾT</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+});
+
 
 
   eleventyConfig.addShortcode("textsection", function (text) {

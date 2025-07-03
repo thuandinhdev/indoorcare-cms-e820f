@@ -362,3 +362,51 @@ window.CMS.registerEditorComponent({
     `;
   }
 });
+window.CMS.registerEditorComponent({
+  id: "youtubeinfoblock",
+  label: "YouTube",
+  fields: [
+    {
+      name: "youtube",
+      label: "YouTube Link",
+      widget: "string"
+    },
+    {
+      name: "infos",
+      label: "Infos",
+      widget: "list",
+      fields: [
+        {
+          name: "info",
+          label: "Info",
+          widget: "string"
+        }
+      ]
+    }
+  ],
+  pattern: /{%\s*youtubeinfoblock\s*"([\s\S]+?)"\s*%}/,
+  fromBlock(match) {
+    try {
+      return JSON.parse(match[1].trim());
+    } catch (e) {
+      console.error("JSON parse error in youtubeinfoblock:", e);
+      return { youtube: "", infos: [] };
+    }
+  },
+  toBlock(obj) {
+    return `{% youtubeinfoblock "${JSON.stringify(obj).replace(/"/g, '\\"')}" %}`;
+  },
+  toPreview(obj) {
+    const youtubeEmbed = (obj.youtube || "").replace("watch?v=", "embed/");
+    return `
+      <div class="youtube-info-preview my-4">
+        <div class="embed-responsive embed-responsive-16by9 mb-3">
+          <iframe class="embed-responsive-item" src="${youtubeEmbed}" allowfullscreen></iframe>
+        </div>
+        <ul>
+          ${(obj.infos || []).map(info => `<li><strong>${info.label}</strong>: ${info.value}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
+});
