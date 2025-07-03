@@ -365,7 +365,7 @@ window.CMS.registerEditorComponent({
 
 window.CMS.registerEditorComponent({
   id: "youtubeinfoblock",
-  label: "YouTube + Info",
+  label: "YouTube",
   fields: [
     {
       name: "youtube",
