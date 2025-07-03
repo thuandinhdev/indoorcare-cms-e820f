@@ -211,56 +211,93 @@ module.exports = function (eleventyConfig) {
       `;
     }
   });
-  
+eleventyConfig.addShortcode("imagetextgroup", function (input) {
+  const firstSepIndex = input.indexOf("|");
+  if (firstSepIndex === -1) return "";
 
- eleventyConfig.addShortcode("imagetextgroup", function (input) {
-  const items = input.split(",");
-  if (!items.length) return "";
+  const size = input.substring(0, firstSepIndex).trim();
+  const blocksRaw = input.substring(firstSepIndex + 1);
 
-  // Lấy className từ phần tử đầu tiên
-  const [className, ...firstBlock] = items[0].split("|").map(s => s.trim());
-
-  // Ghép lại phần tử đầu tiên về đúng định dạng block
-  const fixedBlocks = [
-    [firstBlock[0], firstBlock[1], firstBlock[2]].join("|"),
-    ...items.slice(1)
-  ];
-
-  const blocks = fixedBlocks.map(str => {
-    const [image, title, description] = str.split("|").map(s => s.trim());
-    return { image, title, description };
+  const blocks = blocksRaw.split("@@").map(str => {
+    const [image, title, ...descParts] = str.split("|").map(s => s.trim());
+    return {
+      image,
+      title,
+      description: descParts.join("|")
+    };
   });
 
-  if (className === 'style1') {
+  // Tuỳ từng style xử lý
+  if (size === "style1") {
     return `<section class="section pt-0">
-        <div class="container">
-            <div class="row mt-4 pt-2 justify-content-around">
-            ${blocks.map(b => `
-                <div class="col-md-1 col-6 mt-4 pt-2">
-                    <div class="counter-box text-center">
-                        <img src="${b.image}" class="avatar" alt="">
-                        <h5 class="counter-head text-muted mt-2">${b.title}</h5>
-                    </div>
-                </div>
-              `).join("")}
+      <div class="container">
+        <div class="row mt-4 pt-2 justify-content-around">
+          ${blocks.map(b => `
+            <div class="col-md-1 col-6 mt-4 pt-2">
+              <div class="counter-box text-center">
+                <img src="${b.image}" class="avatar" alt="">
+                <h5 class="counter-head text-muted mt-2">${b.title}</h5>
+              </div>
             </div>
+          `).join("")}
         </div>
+      </div>
     </section>`;
   }
+  if (size === "style2") {
+    return `
+    ${blocks.map((b, i) => `
+      <div class="container mt-100 mt-60">
+          <div class="row align-items-center">
+              <div class="col-lg-7 col-md-6 ${i % 2 === 0 ? 'order-md-1' : 'order-md-2'} order-2 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                  <div class="section-title mr-lg-5">
+                      <h4 class="title mb-4">${b.title}</h4>
+                      <p class="text-muted">${b.description}</p>
+                  </div>
+              </div>
 
-  // fallback style
-  return `
-  <div class="image-text-group ${className}">
-    ${blocks.map(b => `
-      <div class="block my-4">
-        <img src="${b.image}" style="max-width: 100%; margin-bottom: 0.5rem;" />
-        <h4>${b.title}</h4>
-        <p>${b.description}</p>
+              <div class="col-lg-5 col-md-6 order-1 ${i % 2 === 0 ? 'order-md-2' : 'order-md-1'} text-center">
+                  <img src="${b.image}" alt="">
+              </div>
+          </div>
       </div>
-    `).join("")}
-  </div>
+      `).join("")}`;
+  }
+
+  if (size === "style3") {
+    return `
+      <div class="container mb-5 pb-5">
+          <div class="row">
+            ${blocks.map((b, i) => `
+              <div class="col-lg-3 col-md-6 col-6 mt-4 pt-2 text-center">
+                  <h6 class="lead font-weight-bold small">${b.title}</h6>
+                  <p class="text-muted small">${b.description}</p>
+                  <div class="card rounded border-0 shadow-lg">
+                      <div class="position-relative">
+                          <img src="${b.image}" class="card-img-top rounded-top" alt="...">
+                          <div class="overlay rounded-top bg-dark"></div>
+                      </div>
+                  </div>
+              </div>
+            `).join("")}
+          </div>
+      </div>`;
+  }
+
+  // Default render cho các style khác
+  return `
+    <div class="image-text-group ${size}">
+      ${blocks.map(b => `
+        <div class="block my-4">
+          <img src="${b.image}" style="max-width: 100%; margin-bottom: 0.5rem;" />
+          <h4>${b.title}</h4>
+          <p>${b.description.replace(/\n/g, "<br>")}</p>
+        </div>
+      `).join("")}
+    </div>
   `;
 });
+
 
 
   eleventyConfig.addShortcode("textsection", function (text) {

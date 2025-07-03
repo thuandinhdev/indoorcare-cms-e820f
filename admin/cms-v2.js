@@ -202,7 +202,6 @@ window.CMS.registerEditorComponent({
       widget: "text"
     }
   ],
-  // Regex nhận diện block {% textsection "..." %}
   pattern: /^\{%\s*textsection\s+"([\s\S]*?)"\s*%\}$/,
   fromBlock: function (match) {
     return {
@@ -226,8 +225,6 @@ window.CMS.registerEditorComponent({
     `;
   }
 });
-
-
 
 window.CMS.registerEditorComponent({
   id: "imagetextgroup",
@@ -269,17 +266,21 @@ window.CMS.registerEditorComponent({
     }
   ],
   pattern: /{%\s*imagetextgroup\s*"(.+?)"\s*%}/,
-  // pattern: /{%\s*imagetextgroup\s*"([^"]+)"\s*%}/,
   fromBlock(match) {
     const fullStr = match[1];
     const firstSepIndex = fullStr.indexOf("|");
     const size = fullStr.substring(0, firstSepIndex).trim();
     const blockDataStr = fullStr.substring(firstSepIndex + 1);
-    const blockParts = blockDataStr.split(",");
+
+    const blockParts = blockDataStr.split("@@");
 
     const blocks = blockParts.map(p => {
-      const [image, title, description] = p.split("|").map(s => s.trim());
-      return { image, title, description };
+      const [image, title, ...descParts] = p.split("|").map(s => s.trim());
+      return {
+        image,
+        title,
+        description: descParts.join("|")
+      };
     });
 
     return {
@@ -291,7 +292,7 @@ window.CMS.registerEditorComponent({
     const size = obj.size || "style1";
     const blockStr = (obj.blocks || [])
       .map(b => `${b.image}|${b.title}|${b.description}`)
-      .join(",");
+      .join(" @@ "); // dùng @@ để phân cách block
     return `{% imagetextgroup "${size}|${blockStr}" %}`;
   },
   toPreview(obj) {
@@ -311,6 +312,7 @@ window.CMS.registerEditorComponent({
     `;
   }
 });
+
 
 window.CMS.registerEditorComponent({
   id: "image",
