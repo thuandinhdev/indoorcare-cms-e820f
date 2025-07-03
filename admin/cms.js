@@ -229,7 +229,8 @@ window.CMS.registerEditorComponent({
       options: [
         { label: "Style1", value: "style1" },
         { label: "Style2", value: "style2" },
-        { label: "Style3", value: "style3" }
+        { label: "Style3", value: "style3" },
+        { label: "Style4", value: "style4" }
       ]
     },
     {
@@ -255,17 +256,24 @@ window.CMS.registerEditorComponent({
       ]
     }
   ],
-  pattern: /^:::imagetextgroup\s*\n([\s\S]*?)\n:::$/,
+  pattern: /{%\s*imagetextgroup\s*"(.+?)"\s*%}/,
   fromBlock(match) {
-    try {
-      return JSON.parse(match[1].trim());
-    } catch (e) {
-      console.error("JSON parse error in imagetextgroup block:", e);
-      return {};
-    }
+    const [size, ...blockParts] = match[1].split(",");
+    const blocks = blockParts.map(p => {
+      const [image, title, description] = p.split("|").map(s => s.trim());
+      return { image, title, description };
+    });
+    return {
+      size: size.split("|")[0].trim(),
+      blocks
+    };
   },
   toBlock(obj) {
-    return `:::imagetextgroup\n${JSON.stringify(obj, null, 2)}\n:::`;
+    const size = obj.size || "style1";
+    const blockStr = (obj.blocks || [])
+      .map(b => `${b.image}|${b.title}|${b.description}`)
+      .join(",");
+    return `{% imagetextgroup "${size}|${blockStr}" %}`;
   },
   toPreview(obj) {
     return `

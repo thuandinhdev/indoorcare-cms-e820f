@@ -185,15 +185,71 @@ module.exports = function (eleventyConfig) {
     const [size, imagesRaw] = input.split("|").map(s => s.trim());
     const imgStyle = size === "large" ? "width: 100%;" : "width: 50%;";
     const images = (imagesRaw || "").split(",").filter(Boolean);
-  
-    return `
-      <div style="margin: 1rem 0;">
-        ${images.map(img => `<img src="${img}" style="${imgStyle}; margin-bottom: 10px;" />`).join("")}
-      </div>
-    `;
+    if(size == "small"){
+      return `
+      ${images.map(img => `<section class="section">
+            <div class="container">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-12 mt-4 pt-2">
+                        <div class="card shop-list border-0 position-relative overflow-hidden">
+                            <div class="shop-image  overflow-hidden rounded shadow">
+                                <a href="javascript:void(0)"><img src="${img}" class="img-fluid" alt=""></a>
+                                <a href="javascript:void(0)" class="overlay-work">
+                                    <img src="${img}" class="img-fluid" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>`).join("")}`;
+    } else {
+      return `
+        <div class="mb-4">
+          ${images.map(img => `<img src="${img}" alt="" class="img-fluid"/>`).join("")}
+        </div>
+      `;
+    }
   });
   
 
+  eleventyConfig.addShortcode("imagetextgroup", function (input) {
+    const [size, ...blocksRaw] = input.split(",");
+    const className = size.split("|")[0].trim();
+  
+    const blocks = blocksRaw.map(str => {
+      const [image, title, description] = str.split("|").map(s => s.trim());
+      return { image, title, description };
+    });
+    if(className == 'style1'){
+      return `<section class="section pt-0">
+          <div class="container">
+              <div class="row mt-4 pt-2 justify-content-around">
+              ${blocks.map(b => `
+                  <div class="col-md-1 col-6 mt-4 pt-2">
+                      <div class="counter-box text-center">
+                          <img src="${b.image}" class="avatar" alt="">
+                          <h5 class="counter-head text-muted mt-2">${b.title}</h5>
+                      </div>
+                  </div>
+                `).join("")}
+              </div>
+          </div>
+      </section>`;
+    }
+    return `
+    <div class="image-text-group ${className}">
+      ${blocks.map(b => `
+        <div class="block my-4">
+          <img src="${b.image}" style="max-width: 100%; margin-bottom: 0.5rem;" />
+          <h4>${b.title}</h4>
+          <p>${b.description}</p>
+        </div>
+      `).join("")}
+    </div>
+    `;
+  });
+  
   
   return {
     templateFormats: ["md", "njk", "liquid"],

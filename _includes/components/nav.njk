@@ -1,3 +1,4 @@
+{% set postslist = collections.post %}
   <div class="container">
       <!-- Logo container-->
       <div>
@@ -30,6 +31,27 @@
                   <a href="{{ entry.url | url }}"{% if entry.url == page.url %} data-current="current item"{% endif %}>{{ entry.title }}</a>
                 </li>
               {%- endfor %}
+              
+              <li class="has-submenu">
+                <a href="javascript:void(0)">Products</a><span class="menu-arrow"></span>
+                <ul class="submenu megamenu">
+                    <li>
+                        <ul>
+                {% for post in postslist | reverse %}
+                    <li>
+                        <a href="{{ post.url | url }}">
+                            {% if post.data.title %}
+                                {{ post.data.title }}
+                            {% else %}
+                                Untitled
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+                </ul>
+            </li>
           </ul><!--end navigation menu-->
       </div><!--end navigation-->
   </div><!--end container-->
