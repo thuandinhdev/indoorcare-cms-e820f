@@ -26,4 +26,4 @@ eleventyNavigation:
 
 {% titlesection "h2|AirProce Việt Nam|Khí sạch – Sống sang" %}
 
-{% youtubeinfoblock "https://www.youtube.com/embed/9g-ju82dNS4?si=SPgp7K_w8DL6sM2L|CẤP KHÍ TƯƠI SẠCH 99,96% @@LOẠI BỎ CO2, KHÍ ĐỘC, MÙI HÔI, VI KHUẨN… @@VẬN HÀNH ÊM ÁI – KẾT NỐI THÔNG MINH @@BỘ TRAO ĐỔI NHIỆT LÊN ĐẾN 85% @@TẠO HƯƠNG THƠM THEO SỞ THÍCH GIA CHỦ" %}
+{% youtubeinfoblock "https://www.youtube.com/embed/3cLYR5u2g0Y|CẤP KHÍ TƯƠI SẠCH 99,96% @@LOẠI BỎ CO2, KHÍ ĐỘC, MÙI HÔI, VI KHUẨN… @@VẬN HÀNH ÊM ÁI – KẾT NỐI THÔNG MINH @@BỘ TRAO ĐỔI NHIỆT LÊN ĐẾN 85% @@TẠO HƯƠNG THƠM THEO SỞ THÍCH GIA CHỦ" %}
