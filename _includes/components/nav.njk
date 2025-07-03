@@ -26,14 +26,15 @@
           <!-- Navigation Menu-->
            {% set navPages = collections.all | eleventyNavigation %}
           <ul class="navigation-menu">
-              {%- for entry in navPages %}
+              <!-- {%- for entry in navPages %}
                 <li>
                   <a href="{{ entry.url | url }}"{% if entry.url == page.url %} data-current="current item"{% endif %}>{{ entry.title }}</a>
                 </li>
-              {%- endfor %}
-              
+              {%- endfor %} -->
+                <li><a href="/">Trang Chủ</a></li>
+                <li><a href="/about/">Về chúng tôi</a></li>
               <li class="has-submenu">
-                <a href="javascript:void(0)">Products</a><span class="menu-arrow"></span>
+                <a href="javascript:void(0)">Sản Phẩm</a><span class="menu-arrow"></span>
                 <ul class="submenu megamenu">
                     <li>
                         <ul>
@@ -51,6 +52,7 @@
             </ul>
         </li>
                 </ul>
+                <li><a href="/contact/">Liên hệ</a></li>
             </li>
           </ul><!--end navigation menu-->
       </div><!--end navigation-->

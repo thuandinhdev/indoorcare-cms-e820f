@@ -257,14 +257,21 @@ window.CMS.registerEditorComponent({
     }
   ],
   pattern: /{%\s*imagetextgroup\s*"(.+?)"\s*%}/,
+  // pattern: /{%\s*imagetextgroup\s*"([^"]+)"\s*%}/,
   fromBlock(match) {
-    const [size, ...blockParts] = match[1].split(",");
+    const fullStr = match[1];
+    const firstSepIndex = fullStr.indexOf("|");
+    const size = fullStr.substring(0, firstSepIndex).trim();
+    const blockDataStr = fullStr.substring(firstSepIndex + 1);
+    const blockParts = blockDataStr.split(",");
+
     const blocks = blockParts.map(p => {
       const [image, title, description] = p.split("|").map(s => s.trim());
       return { image, title, description };
     });
+
     return {
-      size: size.split("|")[0].trim(),
+      size,
       blocks
     };
   },
