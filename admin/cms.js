@@ -192,10 +192,9 @@ window.CMS.registerEditorComponent({
 });
 
 
-
 window.CMS.registerEditorComponent({
   id: "textsection",
-  label: "Text",
+  label: "Text Section",
   fields: [
     {
       name: "text",
@@ -203,19 +202,32 @@ window.CMS.registerEditorComponent({
       widget: "text"
     }
   ],
-  pattern: /^:::textsection\s*\n([\s\S]*?)\n:::$/,
-  fromBlock: function(match) {
+  // Regex nhận diện block {% textsection "..." %}
+  pattern: /^\{%\s*textsection\s+"([\s\S]*?)"\s*%\}$/,
+  fromBlock: function (match) {
     return {
       text: match[1].trim()
     };
   },
-  toBlock: function(obj) {
-    return `:::textsection\n${obj.text}\n:::`;
+  toBlock: function (obj) {
+    return `{% textsection "${obj.text.replace(/"/g, '\\"')}" %}`;
   },
-  toPreview: function(obj) {
-    return `<div class="my-4"><p>${obj.text.replace(/\n/g, "<br>")}</p></div>`;
+  toPreview: function (obj) {
+    return `
+      <div class="container pb-lg-4 mb-md-5 mb-4 mt-60">
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <div class="section-title">
+              ${obj.text.replace(/\n/g, "<br>")}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 });
+
+
 
 window.CMS.registerEditorComponent({
   id: "imagetextgroup",

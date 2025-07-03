@@ -173,7 +173,7 @@ module.exports = function (eleventyConfig) {
         <div class="row justify-content-center">
           <div class="col-12 text-center">
             <div class="section-title mb-4 pb-2">
-              <${tag || "h2"} class="title mb-4 font-weight-bold">${description}</${tag}>
+              <${tag || "h2"} class="lead text-muted font-weight-bold text-center">${description}</${tag}>
               <h2 class="display-4 font-weight-bold">${title}</h2>
             </div>
           </div>
@@ -213,41 +213,67 @@ module.exports = function (eleventyConfig) {
   });
   
 
-  eleventyConfig.addShortcode("imagetextgroup", function (input) {
-    const [size, ...blocksRaw] = input.split(",");
-    const className = size.split("|")[0].trim();
-  
-    const blocks = blocksRaw.map(str => {
-      const [image, title, description] = str.split("|").map(s => s.trim());
-      return { image, title, description };
-    });
-    if(className == 'style1'){
-      return `<section class="section pt-0">
-          <div class="container">
-              <div class="row mt-4 pt-2 justify-content-around">
-              ${blocks.map(b => `
-                  <div class="col-md-1 col-6 mt-4 pt-2">
-                      <div class="counter-box text-center">
-                          <img src="${b.image}" class="avatar" alt="">
-                          <h5 class="counter-head text-muted mt-2">${b.title}</h5>
-                      </div>
-                  </div>
-                `).join("")}
-              </div>
-          </div>
-      </section>`;
-    }
-    return `
-    <div class="image-text-group ${className}">
-      ${blocks.map(b => `
-        <div class="block my-4">
-          <img src="${b.image}" style="max-width: 100%; margin-bottom: 0.5rem;" />
-          <h4>${b.title}</h4>
-          <p>${b.description}</p>
+ eleventyConfig.addShortcode("imagetextgroup", function (input) {
+  const items = input.split(",");
+  if (!items.length) return "";
+
+  // Lấy className từ phần tử đầu tiên
+  const [className, ...firstBlock] = items[0].split("|").map(s => s.trim());
+
+  // Ghép lại phần tử đầu tiên về đúng định dạng block
+  const fixedBlocks = [
+    [firstBlock[0], firstBlock[1], firstBlock[2]].join("|"),
+    ...items.slice(1)
+  ];
+
+  const blocks = fixedBlocks.map(str => {
+    const [image, title, description] = str.split("|").map(s => s.trim());
+    return { image, title, description };
+  });
+
+  if (className === 'style1') {
+    return `<section class="section pt-0">
+        <div class="container">
+            <div class="row mt-4 pt-2 justify-content-around">
+            ${blocks.map(b => `
+                <div class="col-md-1 col-6 mt-4 pt-2">
+                    <div class="counter-box text-center">
+                        <img src="${b.image}" class="avatar" alt="">
+                        <h5 class="counter-head text-muted mt-2">${b.title}</h5>
+                    </div>
+                </div>
+              `).join("")}
+            </div>
         </div>
-      `).join("")}
-    </div>
-    `;
+    </section>`;
+  }
+
+  // fallback style
+  return `
+  <div class="image-text-group ${className}">
+    ${blocks.map(b => `
+      <div class="block my-4">
+        <img src="${b.image}" style="max-width: 100%; margin-bottom: 0.5rem;" />
+        <h4>${b.title}</h4>
+        <p>${b.description}</p>
+      </div>
+    `).join("")}
+  </div>
+  `;
+});
+
+
+  eleventyConfig.addShortcode("textsection", function (text) {
+  return `
+    <div class="container pb-lg-4 mb-md-5 mb-4 mt-60">
+      <div class="row justify-content-center">
+        <div class="col-8">
+          <div class="section-title">
+            ${text}
+          </div>
+        </div>
+      </div>
+    </div>`;
   });
   
   
