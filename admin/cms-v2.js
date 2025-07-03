@@ -362,13 +362,14 @@ window.CMS.registerEditorComponent({
     `;
   }
 });
+
 window.CMS.registerEditorComponent({
   id: "youtubeinfoblock",
-  label: "YouTube",
+  label: "YouTube + Info",
   fields: [
     {
       name: "youtube",
-      label: "YouTube Link",
+      label: "YouTube Embed Link",
       widget: "string"
     },
     {
@@ -384,17 +385,28 @@ window.CMS.registerEditorComponent({
       ]
     }
   ],
-  pattern: /{%\s*youtubeinfoblock\s*"([\s\S]+?)"\s*%}/,
+  pattern: /{%\s*youtubeinfoblock\s*"(.+?)"\s*%}/,
   fromBlock(match) {
-    try {
-      return JSON.parse(match[1].trim());
-    } catch (e) {
-      console.error("JSON parse error in youtubeinfoblock:", e);
-      return { youtube: "", infos: [] };
-    }
+    const fullStr = match[1];
+    const firstSepIndex = fullStr.indexOf("|");
+    const youtube = fullStr.substring(0, firstSepIndex).trim();
+    const infoStr = fullStr.substring(firstSepIndex + 1).trim();
+
+    const infos = infoStr
+      ? infoStr.split("@@").map(i => ({ info: i.trim() }))
+      : [];
+
+    return {
+      youtube,
+      infos
+    };
   },
   toBlock(obj) {
-    return `{% youtubeinfoblock "${JSON.stringify(obj).replace(/"/g, '\\"')}" %}`;
+    const youtube = obj.youtube || "";
+    const infoStr = (obj.infos || [])
+      .map(i => i.info.trim())
+      .join(" @@");
+    return `{% youtubeinfoblock "${youtube}|${infoStr}" %}`;
   },
   toPreview(obj) {
     const youtubeEmbed = (obj.youtube || "").replace("watch?v=", "embed/");
@@ -404,7 +416,9 @@ window.CMS.registerEditorComponent({
           <iframe class="embed-responsive-item" src="${youtubeEmbed}" allowfullscreen></iframe>
         </div>
         <ul>
-          ${(obj.infos || []).map(info => `<li><strong>${info.label}</strong>: ${info.value}</li>`).join("")}
+          ${(obj.infos || [])
+            .map(info => `<li>${info.info}</li>`)
+            .join("")}
         </ul>
       </div>
     `;
