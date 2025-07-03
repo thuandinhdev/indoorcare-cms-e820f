@@ -205,7 +205,7 @@ module.exports = function (eleventyConfig) {
         </section>`).join("")}`;
     } else {
       return `
-        <div class="mb-4">
+        <div class="mb-4 mt-4">
           ${images.map(img => `<img src="${img}" alt="" class="img-fluid"/>`).join("")}
         </div>
       `;
@@ -282,6 +282,24 @@ eleventyConfig.addShortcode("imagetextgroup", function (input) {
             `).join("")}
           </div>
       </div>`;
+  }
+
+  if (size === "style4") {
+    return `
+    <div class="container pb-lg-4 mb-md-5 mb-4 mt-60">
+        <div class="row justify-content-center">
+        ${blocks.map((b, i) => `
+            <div class="col-12 text-center">
+                <div class="section-title">
+                    <p class="text-muted mx-auto mb-0 font-weight-bold">${b.title}</p>
+                </div>
+                <div class="mb-4 mt-4">
+                    <img src="${b.image}" alt="" class="img-fluid">
+                </div>
+            </div>
+            `).join("")}
+        </div>
+    </div>`;
   }
 
   // Default render cho các style khác
