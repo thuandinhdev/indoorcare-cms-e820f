@@ -22,15 +22,6 @@ eleventyNavigation:
 
 {% clientlogos '{"title":"KHÁCH HÀNG – AIRPROCE","description":"test","logos":["/static/img/brand1.png","/static/img/brand10.png","/static/img/brand18.png","/static/img/brand18.png","/static/img/brand16.png","/static/img/brand20.png","/static/img/brand1.png"]}' %}
 
-:::youtubeinfoblock
-{
-  "youtube": "https://www.youtube.com/embed/3cLYR5u2g0Y?rel=0",
-  "infos": [
-    {
-      "info": "CẤP KHÍ TƯƠI SẠCH 99,96%*"
-    }
-  ]
-}
-:::
+{% youtubeinfoblock "{\"youtube\":\"https://www.youtube.com/embed/3cLYR5u2g0Y?rel=0\",\"infos\":[{\"info\":\"CẤP KHÍ TƯƠI SẠCH 99,96%*\"}]}" %}
 
 {% titlesection "h2|AirProce Việt Nam|Khí sạch – Sống sang" %}
