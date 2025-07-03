@@ -7,6 +7,8 @@ eleventyNavigation:
   key: Home
   order: 0
 ---
+
+
 :::slider
 ![](/static/img/bg1.jpg)
 ![](/static/img/bg2.jpg)
@@ -22,6 +24,6 @@ eleventyNavigation:
 
 {% clientlogos '{"title":"KHÁCH HÀNG – AIRPROCE","description":"test","logos":["/static/img/brand1.png","/static/img/brand10.png","/static/img/brand18.png","/static/img/brand18.png","/static/img/brand16.png","/static/img/brand20.png","/static/img/brand1.png"]}' %}
 
-{% youtubeinfoblock "https://www.youtube.com/embed/9g-ju82dNS4?si=SPgp7K_w8DL6sM2L|CẤP KHÍ TƯƠI SẠCH 99,96% @@LOẠI BỎ CO2, KHÍ ĐỘC, MÙI HÔI, VI KHUẨN… @@VẬN HÀNH ÊM ÁI – KẾT NỐI THÔNG MINH @@BỘ TRAO ĐỔI NHIỆT LÊN ĐẾN 85% @@TẠO HƯƠNG THƠM THEO SỞ THÍCH GIA CHỦ" %}
-
 {% titlesection "h2|AirProce Việt Nam|Khí sạch – Sống sang" %}
+
+{% youtubeinfoblock "https://www.youtube.com/embed/9g-ju82dNS4?si=SPgp7K_w8DL6sM2L|CẤP KHÍ TƯƠI SẠCH 99,96% @@LOẠI BỎ CO2, KHÍ ĐỘC, MÙI HÔI, VI KHUẨN… @@VẬN HÀNH ÊM ÁI – KẾT NỐI THÔNG MINH @@BỘ TRAO ĐỔI NHIỆT LÊN ĐẾN 85% @@TẠO HƯƠNG THƠM THEO SỞ THÍCH GIA CHỦ" %}
