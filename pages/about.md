@@ -9,4 +9,7 @@ eleventyNavigation:
   key: About
   order: 1
 ---
-test
+:::slider
+![](/static/img/bg1.jpg)
+![](/static/img/bg2.jpg)
+:::
